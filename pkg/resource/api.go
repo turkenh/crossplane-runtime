@@ -131,7 +131,7 @@ func (a *APIPatchingApplicator) Apply(ctx context.Context, o client.Object, ao .
 		return errors.Wrap(a.client.Create(ctx, o), "cannot create object")
 	}
 
-	desired := o.DeepCopyObject()
+	desired := o.DeepCopyObject().(client.Object)
 
 	err := a.client.Get(ctx, types.NamespacedName{Name: m.GetName(), Namespace: m.GetNamespace()}, o)
 	if kerrors.IsNotFound(err) {
@@ -152,10 +152,10 @@ func (a *APIPatchingApplicator) Apply(ctx context.Context, o client.Object, ao .
 	return errors.Wrap(a.client.Patch(ctx, o, &patch{desired}), "cannot patch object")
 }
 
-type patch struct{ from runtime.Object }
+type patch struct{ from client.Object }
 
-func (p *patch) Type() types.PatchType                 { return types.MergePatchType }
-func (p *patch) Data(_ runtime.Object) ([]byte, error) { return json.Marshal(p.from) }
+func (p *patch) Type() types.PatchType                { return types.MergePatchType }
+func (p *patch) Data(_ client.Object) ([]byte, error) { return json.Marshal(p.from) }
 
 // An APIUpdatingApplicator applies changes to an object by either creating or
 // updating it in a Kubernetes API server.
