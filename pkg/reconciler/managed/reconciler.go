@@ -371,10 +371,13 @@ type mrManaged struct {
 
 func defaultMRManaged(m manager.Manager) mrManaged {
 	return mrManaged{
-		ConnectionPublisher: NewAPISecretPublisher(m.GetClient(), m.GetScheme()),
-		Finalizer:           resource.NewAPIFinalizer(m.GetClient(), managedFinalizerName),
-		Initializer:         NewNameAsExternalName(m.GetClient()),
-		ReferenceResolver:   NewAPISimpleReferenceResolver(m.GetClient()),
+		ConnectionPublisher: PublisherChain{
+			NewAPISecretPublisher(m.GetClient(), m.GetScheme()),
+			NewVaultSecretPublisher(m.GetClient(), m.GetScheme()),
+		},
+		Finalizer:         resource.NewAPIFinalizer(m.GetClient(), managedFinalizerName),
+		Initializer:       NewNameAsExternalName(m.GetClient()),
+		ReferenceResolver: NewAPISimpleReferenceResolver(m.GetClient()),
 	}
 }
 
