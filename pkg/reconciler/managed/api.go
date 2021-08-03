@@ -99,7 +99,7 @@ func NewAPISecretPublisher(c client.Client, ot runtime.ObjectTyper) *APISecretPu
 // already exists with the supplied ConnectionDetails.
 func (a *APISecretPublisher) PublishConnection(ctx context.Context, mg resource.Managed, c ConnectionDetails) error {
 	// This resource does not want to expose a connection secret.
-	if mg.GetWriteConnectionSecretToReference() == nil {
+	if mg.GetWriteConnectionSecretToReference() == nil && mg.GetPublishConnectionDetailsToKubernetesSink() == nil {
 		return nil
 	}
 

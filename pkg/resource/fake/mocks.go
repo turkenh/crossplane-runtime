@@ -123,6 +123,32 @@ func (m *LocalConnectionSecretWriterTo) GetWriteConnectionSecretToReference() *x
 	return m.Ref
 }
 
+// ConnectionDetailsPublisherToKubernetes is a mock that implements ConnectionDetailsPublisherToKubernetes interface.
+type ConnectionDetailsPublisherToKubernetes struct{ Sink *xpv1.SecretSinkKubernetes }
+
+// SetPublishConnectionDetailsToKubernetesSink sets the ConnectionDetailsPublisherToKubernetes sink.
+func (m *ConnectionDetailsPublisherToKubernetes) SetPublishConnectionDetailsToKubernetesSink(s *xpv1.SecretSinkKubernetes) {
+	m.Sink = s
+}
+
+// GetPublishConnectionDetailsToKubernetesSink gets the ConnectionDetailsPublisherToKubernetes sink.
+func (m *ConnectionDetailsPublisherToKubernetes) GetPublishConnectionDetailsToKubernetesSink() *xpv1.SecretSinkKubernetes {
+	return m.Sink
+}
+
+// ConnectionDetailsPublisherToVault is a mock that implements ConnectionDetailsPublisherToVault interface.
+type ConnectionDetailsPublisherToVault struct{ Sink *xpv1.SecretSinkVault }
+
+// SetPublishConnectionDetailsToVaultSink sets the ConnectionDetailsPublisherToVault sink.
+func (m *ConnectionDetailsPublisherToVault) SetPublishConnectionDetailsToVaultSink(s *xpv1.SecretSinkVault) {
+	m.Sink = s
+}
+
+// GetPublishConnectionDetailsToVaultSink gets the ConnectionDetailsPublisherToVault sink.
+func (m *ConnectionDetailsPublisherToVault) GetPublishConnectionDetailsToVaultSink() *xpv1.SecretSinkVault {
+	return m.Sink
+}
+
 // ConnectionSecretWriterTo is a mock that implements ConnectionSecretWriterTo interface.
 type ConnectionSecretWriterTo struct{ Ref *xpv1.SecretReference }
 
@@ -237,6 +263,8 @@ type Managed struct {
 	ProviderReferencer
 	ProviderConfigReferencer
 	ConnectionSecretWriterTo
+	ConnectionDetailsPublisherToKubernetes
+	ConnectionDetailsPublisherToVault
 	Orphanable
 	xpv1.ConditionedStatus
 }
@@ -387,7 +415,8 @@ type MockConnectionSecretOwner struct {
 	runtime.Object
 	metav1.ObjectMeta
 
-	Ref *xpv1.SecretReference
+	Ref  *xpv1.SecretReference
+	Sink *xpv1.SecretSinkKubernetes
 }
 
 // GetWriteConnectionSecretToReference returns the connection secret reference.
@@ -398,6 +427,16 @@ func (m *MockConnectionSecretOwner) GetWriteConnectionSecretToReference() *xpv1.
 // SetWriteConnectionSecretToReference sets the connection secret reference.
 func (m *MockConnectionSecretOwner) SetWriteConnectionSecretToReference(r *xpv1.SecretReference) {
 	m.Ref = r
+}
+
+// GetPublishConnectionDetailsToKubernetesSink returns the connection secret Kubernetes sink.
+func (m *MockConnectionSecretOwner) GetPublishConnectionDetailsToKubernetesSink() *xpv1.SecretSinkKubernetes {
+	return m.Sink
+}
+
+// SetPublishConnectionDetailsToKubernetesSink sets the connection secret Kubernetes sink.
+func (m *MockConnectionSecretOwner) SetPublishConnectionDetailsToKubernetesSink(s *xpv1.SecretSinkKubernetes) {
+	m.Sink = s
 }
 
 // GetObjectKind returns schema.ObjectKind.

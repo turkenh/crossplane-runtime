@@ -122,6 +122,7 @@ type ConnectionSecretOwner interface {
 	metav1.Object
 
 	ConnectionSecretWriterTo
+	ConnectionDetailsPublisherToKubernetes
 }
 
 // ConnectionSecretFor creates a connection for the supplied
@@ -129,10 +130,19 @@ type ConnectionSecretOwner interface {
 // written to 'default' namespace if the ConnectionSecretOwner does not specify
 // a namespace.
 func ConnectionSecretFor(o ConnectionSecretOwner, kind schema.GroupVersionKind) *corev1.Secret {
+	var n, ns string
+	if o.GetWriteConnectionSecretToReference() != nil {
+		n = o.GetWriteConnectionSecretToReference().Name
+		ns = o.GetWriteConnectionSecretToReference().Namespace
+	}
+	if o.GetPublishConnectionDetailsToKubernetesSink() != nil {
+		n = o.GetPublishConnectionDetailsToKubernetesSink().SecretRef.Name
+		ns = o.GetPublishConnectionDetailsToKubernetesSink().SecretRef.Namespace
+	}
 	return &corev1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
-			Namespace:       o.GetWriteConnectionSecretToReference().Namespace,
-			Name:            o.GetWriteConnectionSecretToReference().Name,
+			Namespace:       ns,
+			Name:            n,
 			OwnerReferences: []metav1.OwnerReference{meta.AsController(meta.TypedReferenceTo(o, kind))},
 		},
 		Type: SecretTypeConnection,

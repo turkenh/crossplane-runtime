@@ -60,6 +60,18 @@ type ConnectionSecretWriterTo interface {
 	GetWriteConnectionSecretToReference() *xpv1.SecretReference
 }
 
+// A ConnectionDetailsPublisherToKubernetes may write a connection secret to Kubernetes
+type ConnectionDetailsPublisherToKubernetes interface {
+	SetPublishConnectionDetailsToKubernetesSink(s *xpv1.SecretSinkKubernetes)
+	GetPublishConnectionDetailsToKubernetesSink() *xpv1.SecretSinkKubernetes
+}
+
+// A ConnectionDetailsPublisherToVault may write a connection secret to Vault
+type ConnectionDetailsPublisherToVault interface {
+	SetPublishConnectionDetailsToVaultSink(s *xpv1.SecretSinkVault)
+	GetPublishConnectionDetailsToVaultSink() *xpv1.SecretSinkVault
+}
+
 // An Orphanable resource may specify a DeletionPolicy.
 type Orphanable interface {
 	SetDeletionPolicy(p xpv1.DeletionPolicy)
@@ -148,6 +160,8 @@ type Managed interface {
 	ProviderReferencer
 	ProviderConfigReferencer
 	ConnectionSecretWriterTo
+	ConnectionDetailsPublisherToKubernetes
+	ConnectionDetailsPublisherToVault
 	Orphanable
 
 	Conditioned

@@ -136,6 +136,10 @@ type ResourceSpec struct {
 	// +optional
 	WriteConnectionSecretToReference *SecretReference `json:"writeConnectionSecretToRef,omitempty"`
 
+	// PublishConnectionDetails TODO
+	// +optional
+	PublishConnectionDetails []ConnectionDetailsSink `json:"publishConnectionDetails,omitempty"`
+
 	// ProviderConfigReference specifies how the provider that will be used to
 	// create, observe, update, and delete this managed resource should be
 	// configured.
@@ -239,7 +243,7 @@ type ProviderConfigUsage struct {
 
 // SecretSinkKubernetes is a sink to publish secrets to Kubernetes
 type SecretSinkKubernetes struct {
-	SecretRef *LocalSecretReference `json:"secretRef"`
+	SecretRef *SecretReference `json:"secretRef"`
 }
 
 // SecretSinkVault is a sink to publish secrets to Vault
@@ -264,11 +268,6 @@ type TargetSpec struct {
 	// allows for scheduling of workloads.
 	// +optional
 	WriteConnectionSecretToReference *LocalSecretReference `json:"connectionSecretRef,omitempty"`
-
-	// PublishConnectionDetails TODO
-	// +optional
-	PublishConnectionDetails []ConnectionDetailsSink `json:"publishConnectionDetails,omitempty"`
-
 	// A ResourceReference specifies an existing managed resource, in any
 	// namespace, which this target should attempt to propagate a connection
 	// secret from.

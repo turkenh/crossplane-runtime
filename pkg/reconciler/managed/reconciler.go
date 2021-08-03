@@ -373,7 +373,7 @@ func defaultMRManaged(m manager.Manager) mrManaged {
 	return mrManaged{
 		ConnectionPublisher: PublisherChain{
 			NewAPISecretPublisher(m.GetClient(), m.GetScheme()),
-			NewVaultSecretPublisher(m.GetClient(), m.GetScheme()),
+			NewVaultSecretPublisher(m.GetScheme()),
 		},
 		Finalizer:         resource.NewAPIFinalizer(m.GetClient(), managedFinalizerName),
 		Initializer:       NewNameAsExternalName(m.GetClient()),

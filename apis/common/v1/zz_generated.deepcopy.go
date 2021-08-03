@@ -218,6 +218,13 @@ func (in *ResourceSpec) DeepCopyInto(out *ResourceSpec) {
 		*out = new(SecretReference)
 		**out = **in
 	}
+	if in.PublishConnectionDetails != nil {
+		in, out := &in.PublishConnectionDetails, &out.PublishConnectionDetails
+		*out = make([]ConnectionDetailsSink, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
 	if in.ProviderConfigReference != nil {
 		in, out := &in.ProviderConfigReference, &out.ProviderConfigReference
 		*out = new(Reference)
@@ -292,7 +299,7 @@ func (in *SecretSinkKubernetes) DeepCopyInto(out *SecretSinkKubernetes) {
 	*out = *in
 	if in.SecretRef != nil {
 		in, out := &in.SecretRef, &out.SecretRef
-		*out = new(LocalSecretReference)
+		*out = new(SecretReference)
 		**out = **in
 	}
 }
@@ -356,13 +363,6 @@ func (in *TargetSpec) DeepCopyInto(out *TargetSpec) {
 		in, out := &in.WriteConnectionSecretToReference, &out.WriteConnectionSecretToReference
 		*out = new(LocalSecretReference)
 		**out = **in
-	}
-	if in.PublishConnectionDetails != nil {
-		in, out := &in.PublishConnectionDetails, &out.PublishConnectionDetails
-		*out = make([]ConnectionDetailsSink, len(*in))
-		for i := range *in {
-			(*in)[i].DeepCopyInto(&(*out)[i])
-		}
 	}
 	if in.ResourceReference != nil {
 		in, out := &in.ResourceReference, &out.ResourceReference
