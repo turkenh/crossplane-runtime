@@ -60,6 +60,13 @@ type ConnectionSecretWriterTo interface {
 	GetWriteConnectionSecretToReference() *xpv1.SecretReference
 }
 
+// A ConnectionSecretPublisherTo may publish a connection secret to a secret
+// store
+type ConnectionSecretPublisherTo interface {
+	SetPublishConnectionSecretTo(c *xpv1.ConnectionSecretConfig)
+	GetPublishConnectionSecretTo() *xpv1.ConnectionSecretConfig
+}
+
 // An Orphanable resource may specify a DeletionPolicy.
 type Orphanable interface {
 	SetDeletionPolicy(p xpv1.DeletionPolicy)
@@ -162,6 +169,7 @@ type Managed interface {
 	ProviderReferencer
 	ProviderConfigReferencer
 	ConnectionSecretWriterTo
+	ConnectionSecretPublisherTo
 	Orphanable
 
 	Conditioned
@@ -210,6 +218,7 @@ type Composite interface {
 	ComposedResourcesReferencer
 	ClaimReferencer
 	ConnectionSecretWriterTo
+	ConnectionSecretPublisherTo
 
 	Conditioned
 	ConnectionDetailsPublishedTimer
@@ -221,6 +230,7 @@ type Composed interface {
 
 	Conditioned
 	ConnectionSecretWriterTo
+	ConnectionSecretPublisherTo
 }
 
 // A CompositeClaim for a Composite resource.
@@ -233,7 +243,14 @@ type CompositeClaim interface {
 	CompositionRevisionReferencer
 	CompositeResourceReferencer
 	LocalConnectionSecretWriterTo
+	// Todo(turkenh): Add LocalConnectionSecretPublisherTo
 
 	Conditioned
 	ConnectionDetailsPublishedTimer
+}
+
+type PublishConnectionConfig interface {
+	Object
+
+	ConnectionSecretPublisherTo
 }

@@ -18,6 +18,7 @@ package v1
 
 import (
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
@@ -67,6 +68,42 @@ type SecretReference struct {
 
 	// Namespace of the secret.
 	Namespace string `json:"namespace"`
+}
+
+// A StoreConfigReference is a reference to a secret store config in an
+// arbitrary namespace.
+// Todo(turkenh): Add local type
+type StoreConfigReference struct {
+	// Name of the secret store config.
+	Name string `json:"name"`
+
+	// Namespace of the secret store config.
+	Namespace string `json:"namespace"`
+}
+
+type KubernetesConnectionSecretConfig struct {
+	// Namespace of the secret.
+	Namespace string `json:"namespace"`
+	// Labels will be sets as metadata.labels of secret.
+	Labels map[string]string `json:"labels"`
+	// Todo(turkenh): add more...
+}
+
+type ExternalConnectionSecretConfig struct {
+	StoreConfigRef StoreConfigReference `json:"configRef"`
+	// +kubebuilder:pruning:PreserveUnknownFields
+	Attributes runtime.RawExtension `json:"attributes,omitempty"`
+}
+
+type ConnectionSecretConfig struct {
+	// Name of the secret.
+	Name string `json:"name"`
+	// Kubernetes is the configuration for storing connection details as k8s
+	// secret.
+	Kubernetes *KubernetesConnectionSecretConfig `json:"kubernetes"`
+	// ExternalStore is the configuration for storing connection details to
+	// external secret stores
+	ExternalStore *ExternalConnectionSecretConfig `json:"externalStore"`
 }
 
 // A SecretKeySelector is a reference to a secret key in an arbitrary namespace.
