@@ -95,9 +95,21 @@ const (
 	VaultAuthToken VaultAuthMethod = "Token"
 )
 
+// VaultAuthTokenConfig represents configuration for Vault Token Auth Method.
+// https://www.vaultproject.io/docs/auth/token
+type VaultAuthTokenConfig struct {
+	// Source of the credentials.
+	// +kubebuilder:validation:Enum=None;Secret;Environment;Filesystem
+	Source CredentialsSource `json:"source"`
+
+	// CommonCredentialSelectors provides common selectors for extracting
+	// credentials.
+	CommonCredentialSelectors `json:",inline"`
+}
+
 // VaultAuthKubernetesConfig represents configuration for Vault Kubernetes Auth
 // Method.
-// https://www.vaultproject.io/docs/auth
+// https://www.vaultproject.io/docs/auth/kubernetes
 type VaultAuthKubernetesConfig struct {
 	// MountPath configures path where the Kubernetes authentication backend is
 	// mounted in Vault.
@@ -111,6 +123,8 @@ type VaultAuthKubernetesConfig struct {
 type VaultAuthConfig struct {
 	// Method configures which auth method will be used.
 	Method VaultAuthMethod `json:"method"`
+	// Token configures Token Auth for Vault.
+	Token *VaultAuthTokenConfig `json:"token,omitempty"`
 	// Kubernetes configures Kubernetes Auth for Vault.
 	Kubernetes *VaultAuthKubernetesConfig `json:"kubernetes,omitempty"`
 }
