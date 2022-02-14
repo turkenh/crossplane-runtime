@@ -39,6 +39,7 @@ const (
 	errCreateOrUpdateSecret = "cannot create or update connection applicator"
 
 	errExtractKubernetesAuthCreds = "cannot extract kubernetes auth credentials"
+	errBuildClientWithKubernetes  = "cannot build client with kubernetes client"
 )
 
 type SecretStore struct {
@@ -69,7 +70,7 @@ func NewSecretStore(ctx context.Context, local client.Client, cfg v1.SecretStore
 	}
 	remote, err := clientForKubeconfig(kfg)
 	if err != nil {
-		return nil, errors.Wrap(err, errExtractKubernetesAuthCreds)
+		return nil, errors.Wrap(err, errBuildClientWithKubernetes)
 	}
 
 	return &SecretStore{

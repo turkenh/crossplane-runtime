@@ -135,14 +135,14 @@ type VaultSecretStoreConfig struct {
 	// Server is the url of the Vault server, e.g. "https://vault.acme.org"
 	Server string `json:"server"`
 
-	// ParentPath is the path to be prepended to all secrets.
+	// PathPrefix is the path to be prepended to all secrets.
 	// +kubebuilder:default="secret/crossplane/"
-	ParentPath string `json:"parentPath"`
+	PathPrefix string `json:"pathPrefix"`
 
 	// Version of the KV Secrets engine of Vault.
 	// https://www.vaultproject.io/docs/secrets/kv
 	// +kubebuilder:default=v2
-	Version string `json:"version"`
+	Version string `json:"version,omitempty"`
 
 	// CABundle is base64 encoded string of Vaults CA certificate.
 	CABundle string `json:"caBundle,omitempty"`

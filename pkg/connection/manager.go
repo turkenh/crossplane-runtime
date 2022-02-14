@@ -50,7 +50,7 @@ const (
 // resource.
 type StoreConfigKind schema.GroupVersionKind
 
-type StoreBuilderFn func(ctx context.Context, local client.Client, cfg v1.SecretStoreConfig) (store.Store, error)
+type StoreBuilderFn func(context.Context, client.Client, v1.SecretStoreConfig) (store.Store, error)
 
 type Manager struct {
 	client         client.Client
