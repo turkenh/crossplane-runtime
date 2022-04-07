@@ -94,6 +94,9 @@ const (
 
 	// SecretStoreVault indicates that secret store type is Vault.
 	SecretStoreVault SecretStoreType = "Vault"
+
+	// SecretStoreExternal indicates that secret store type is External.
+	SecretStoreExternal SecretStoreType = "External"
 )
 
 // SecretStoreConfig represents configuration of a Secret Store.
@@ -121,6 +124,10 @@ type SecretStoreConfig struct {
 	// Vault configures a Vault secret store.
 	// +optional
 	Vault *VaultSecretStoreConfig `json:"vault,omitempty"`
+
+	// External configures an External secret store.
+	// +optional
+	External *ExternalSecretStoreConfig `json:"external,omitempty"`
 }
 
 // KubernetesAuthConfig required to authenticate to a K8s API. It expects
@@ -223,4 +230,12 @@ type VaultSecretStoreConfig struct {
 
 	// Auth configures an authentication method for Vault.
 	Auth VaultAuthConfig `json:"auth"`
+}
+
+// ExternalSecretStoreConfig represents the required configuration for an
+// external secret store.
+type ExternalSecretStoreConfig struct {
+	// PluginConfigRef specifies which secret store plugin config should be used
+	// for this ConnectionSecret.
+	PluginConfigRef TypedReference `json:"pluginConfigRef"`
 }

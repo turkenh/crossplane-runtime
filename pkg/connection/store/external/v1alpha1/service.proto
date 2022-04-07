@@ -1,0 +1,76 @@
+/*
+ Copyright 2022 The Crossplane Authors.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+// TODO(turkenh): add note on how to regenerate
+syntax = "proto3";
+
+package v1alpha1;
+option go_package = "github.com/crossplane/crossplane-runtime/pkg/connection/store/external/v1alpha1";
+
+// This service defines the public APIs for an External Secret Store plugin.
+service ExternalSecretStoreService {
+    rpc GetSecret(GetSecretRequest) returns (GetSecretResponse) {}
+    rpc ApplySecret(ApplySecretRequest) returns (ApplySecretResponse) {}
+    rpc DeleteKeys(DeleteKeysRequest) returns (DeleteKeysResponse) {}
+}
+
+message GetSecretRequest {
+    ConfigReference config = 1;
+    Secret secret = 2;
+    GetOptions options = 3;
+}
+
+message GetSecretResponse {
+    Secret secret = 1;
+}
+
+message ApplySecretRequest {
+    ConfigReference config = 1;
+    Secret secret = 2;
+    ApplyOptions options = 3;
+}
+
+message ApplySecretResponse {
+    bool changed = 1;
+}
+
+message DeleteKeysRequest {
+    ConfigReference config = 1;
+    Secret secret = 2;
+    DeleteOptions options = 3;
+}
+
+message DeleteKeysResponse {}
+
+message GetOptions {}
+
+message ApplyOptions {}
+
+message DeleteOptions {
+    bool keep_empty_secret = 1;
+}
+
+message ConfigReference {
+    string api_version = 1;
+    string kind = 2;
+    string name = 3;
+}
+
+message Secret {
+    string scoped_name = 1;
+    map<string, string> metadata = 2;
+    map<string, bytes> data = 3;
+}
