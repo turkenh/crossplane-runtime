@@ -45,6 +45,8 @@ type SecretStore struct {
 	client     ess.ExternalSecretStoreServiceClient
 	kubeClient client.Client
 	config     *v1.Config
+
+	defaultScope string
 }
 
 // NewSecretStore returns a new External SecretStore.
@@ -62,16 +64,24 @@ func NewSecretStore(ctx context.Context, kube client.Client, tlsConfig *tls.Conf
 	cl := ess.NewExternalSecretStoreServiceClient(conn)
 
 	return &SecretStore{
-		kubeClient: kube,
-		client:     cl,
-		config:     cfg.Plugin.ConfigRef,
+		kubeClient:   kube,
+		client:       cl,
+		defaultScope: cfg.DefaultScope,
+		config:       cfg.Plugin.ConfigRef,
 	}, nil
+}
+
+func (ss *SecretStore) getScopedName(n store.ScopedName) string {
+	if n.Scope == "" {
+		n.Scope = ss.defaultScope
+	}
+	return filepath.Join(n.Scope, n.Name)
 }
 
 // ReadKeyValues reads and returns key value pairs for a given Secret.
 func (ss *SecretStore) ReadKeyValues(ctx context.Context, n store.ScopedName, s *store.Secret) error {
 	sec := new(ess.Secret)
-	sec.ScopedName = filepath.Join(n.Scope, n.Name)
+	sec.ScopedName = ss.getScopedName(n)
 
 	cfg := ss.getConfigReference()
 
@@ -99,7 +109,7 @@ func (ss *SecretStore) ReadKeyValues(ctx context.Context, n store.ScopedName, s 
 // WriteKeyValues writes key value pairs to a given Secret.
 func (ss *SecretStore) WriteKeyValues(ctx context.Context, s *store.Secret, wo ...store.WriteOption) (changed bool, err error) {
 	sec := new(ess.Secret)
-	sec.ScopedName = filepath.Join(s.Scope, s.Name)
+	sec.ScopedName = ss.getScopedName(s.ScopedName)
 	sec.Data = make(map[string][]byte, len(s.Data))
 	for k, v := range s.Data {
 		sec.Data[k] = v
@@ -125,7 +135,7 @@ func (ss *SecretStore) WriteKeyValues(ctx context.Context, s *store.Secret, wo .
 // DeleteKeyValues delete key value pairs from a given Secret.
 func (ss *SecretStore) DeleteKeyValues(ctx context.Context, s *store.Secret, do ...store.DeleteOption) error {
 	sec := new(ess.Secret)
-	sec.ScopedName = filepath.Join(s.Scope, s.Name)
+	sec.ScopedName = ss.getScopedName(s.ScopedName)
 
 	cfg := ss.getConfigReference()
 

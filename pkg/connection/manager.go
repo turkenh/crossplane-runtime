@@ -59,6 +59,12 @@ func WithStoreBuilder(sb StoreBuilderFn) DetailsManagerOption {
 	}
 }
 
+func WithTLSConfig(tlsConfig *tls.Config) DetailsManagerOption {
+	return func(m *DetailsManager) {
+		m.tlsConfig = tlsConfig
+	}
+}
+
 // DetailsManager is a connection details manager that satisfies the required
 // interfaces to work with connection details by managing interaction with
 // different store implementations.
@@ -70,7 +76,7 @@ type DetailsManager struct {
 }
 
 // NewDetailsManager returns a new connection DetailsManager.
-func NewDetailsManager(c client.Client, of schema.GroupVersionKind, tlsConfig *tls.Config, o ...DetailsManagerOption) *DetailsManager {
+func NewDetailsManager(c client.Client, of schema.GroupVersionKind, o ...DetailsManagerOption) *DetailsManager {
 	nc := func() StoreConfig {
 		return resource.MustCreateObject(of, c.Scheme()).(StoreConfig)
 	}
@@ -83,7 +89,6 @@ func NewDetailsManager(c client.Client, of schema.GroupVersionKind, tlsConfig *t
 		client:       c,
 		newConfig:    nc,
 		storeBuilder: RuntimeStoreBuilder,
-		tlsConfig:    tlsConfig,
 	}
 
 	for _, mo := range o {
