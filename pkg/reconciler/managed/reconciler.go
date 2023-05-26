@@ -864,6 +864,11 @@ func (r *Reconciler) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	if meta.WasDeleted(managed) {
 		log = log.WithValues("deletion-timestamp", managed.GetDeletionTimestamp())
+		if meta.IsExternalDeleteBlocked(managed) {
+			log.Debug("External deletion is blocked by another resource")
+			record.Event(managed, event.Normal(reasonPending, "External deletion is blocked until the resource is deleted"))
+			return reconcile.Result{Requeue: true}, nil
+		}
 
 		// We'll only reach this point if deletion policy is not orphan, so we
 		// are safe to call external deletion if external resource exists.

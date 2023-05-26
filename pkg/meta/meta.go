@@ -58,6 +58,12 @@ const (
 	// resource failed. Its value must be an RFC3999 timestamp.
 	AnnotationKeyExternalCreateFailed = "crossplane.io/external-create-failed"
 
+	// AnnotationKeyExternalDeleteBlocked is the key in the annotations map
+	// of a resource that indicates the deletion of the external resource should
+	// be blocked. Its value must be a comma seperated list of resource UUIDs
+	// blocking the deletion.
+	AnnotationKeyExternalDeleteBlocked = "crossplane.io/external-delete-blocked-by"
+
 	// AnnotationKeyReconciliationPaused is the key in the annotations map
 	// of a resource that indicates that further reconciliations on the
 	// resource are paused. All create/update/delete/generic events on
@@ -359,6 +365,45 @@ func ExternalCreateSucceededDuring(o metav1.Object, d time.Duration) bool {
 		return false
 	}
 	return time.Since(t) < d
+}
+
+// IsExternalDeleteBlocked returns if the external delete is blocked.
+func IsExternalDeleteBlocked(o metav1.Object) bool {
+	return o.GetAnnotations()[AnnotationKeyExternalDeleteBlocked] != ""
+}
+
+// BlockExternalDelete blocks the external delete by the given blocker by
+// adding its UID from the annotation.
+func BlockExternalDelete(on metav1.Object, blocker metav1.Object) {
+	a := on.GetAnnotations()[AnnotationKeyExternalDeleteBlocked]
+	var blockers []string
+	if a != "" {
+		blockers = strings.Split(a, ",")
+	}
+	for _, b := range blockers {
+		if b == string(blocker.GetUID()) {
+			return
+		}
+	}
+	blockers = append(blockers, string(blocker.GetUID()))
+	AddAnnotations(on, map[string]string{AnnotationKeyExternalDeleteBlocked: strings.Join(blockers, ",")})
+}
+
+// UnblockExternalDelete unblocks the external delete by the given blocker by
+// removing its UID from the annotation.
+func UnblockExternalDelete(on metav1.Object, blocker metav1.Object) {
+	blockers := strings.Split(on.GetAnnotations()[AnnotationKeyExternalDeleteBlocked], ",")
+	for i, b := range blockers {
+		if b == string(blocker.GetUID()) {
+			blockers = append(blockers[:i], blockers[i+1:]...)
+			break
+		}
+	}
+	if len(blockers) > 0 {
+		AddAnnotations(on, map[string]string{AnnotationKeyExternalDeleteBlocked: strings.Join(blockers, ",")})
+		return
+	}
+	RemoveAnnotations(on, AnnotationKeyExternalDeleteBlocked)
 }
 
 // AllowPropagation from one object to another by adding consenting annotations
