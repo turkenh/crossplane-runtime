@@ -120,8 +120,8 @@ type CompositionReferencer interface {
 // A CompositionRevisionReferencer may reference a specific revision of a
 // composition of resources.
 type CompositionRevisionReferencer interface {
-	SetCompositionRevisionReference(ref *corev1.ObjectReference)
-	GetCompositionRevisionReference() *corev1.ObjectReference
+	SetCompositionRevisionReference(ref *corev1.LocalObjectReference)
+	GetCompositionRevisionReference() *corev1.LocalObjectReference
 }
 
 // A CompositionRevisionSelector may reference a set of

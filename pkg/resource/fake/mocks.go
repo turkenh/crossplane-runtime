@@ -50,13 +50,13 @@ func (m *Conditioned) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
 }
 
 // ClaimReferencer is a mock that implements ClaimReferencer interface.
-type ClaimReferencer struct{ Ref *claim.Reference }
+type ClaimReferencer struct{ Ref *reference.Claim }
 
 // SetClaimReference sets the ClaimReference.
-func (m *ClaimReferencer) SetClaimReference(r *claim.Reference) { m.Ref = r }
+func (m *ClaimReferencer) SetClaimReference(r *reference.Claim) { m.Ref = r }
 
 // GetClaimReference gets the ClaimReference.
-func (m *ClaimReferencer) GetClaimReference() *claim.Reference { return m.Ref }
+func (m *ClaimReferencer) GetClaimReference() *reference.Claim { return m.Ref }
 
 // ManagedResourceReferencer is a mock that implements ManagedResourceReferencer interface.
 type ManagedResourceReferencer struct{ Ref *corev1.ObjectReference }
