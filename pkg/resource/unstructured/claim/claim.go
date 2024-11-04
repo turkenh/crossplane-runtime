@@ -98,8 +98,8 @@ func (c *Unstructured) SetCompositionReference(ref *corev1.ObjectReference) {
 }
 
 // GetCompositionRevisionReference of this resource claim.
-func (c *Unstructured) GetCompositionRevisionReference() *corev1.ObjectReference {
-	out := &corev1.ObjectReference{}
+func (c *Unstructured) GetCompositionRevisionReference() *corev1.LocalObjectReference {
+	out := &corev1.LocalObjectReference{}
 	if err := fieldpath.Pave(c.Object).GetValueInto("spec.compositionRevisionRef", out); err != nil {
 		return nil
 	}
@@ -107,7 +107,7 @@ func (c *Unstructured) GetCompositionRevisionReference() *corev1.ObjectReference
 }
 
 // SetCompositionRevisionReference of this resource claim.
-func (c *Unstructured) SetCompositionRevisionReference(ref *corev1.ObjectReference) {
+func (c *Unstructured) SetCompositionRevisionReference(ref *corev1.LocalObjectReference) {
 	_ = fieldpath.Pave(c.Object).SetValue("spec.compositionRevisionRef", ref)
 }
 
