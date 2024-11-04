@@ -21,6 +21,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/crossplane/crossplane-runtime/pkg/resource/unstructured/reference"
+
+	"github.com/crossplane/crossplane-runtime/pkg/resource/unstructured/reference"
+
 	"github.com/google/go-cmp/cmp"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -29,6 +33,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
+	"github.com/crossplane/crossplane-runtime/pkg/resource/unstructured/reference"
 )
 
 var _ client.Object = &Unstructured{}
@@ -172,11 +177,11 @@ func TestCompositionReference(t *testing.T) {
 }
 
 func TestCompositionRevisionReference(t *testing.T) {
-	ref := &corev1.ObjectReference{Namespace: "ns", Name: "cool"}
+	ref := &corev1.LocalObjectReference{Name: "cool"}
 	cases := map[string]struct {
 		u    *Unstructured
-		set  *corev1.ObjectReference
-		want *corev1.ObjectReference
+		set  *corev1.LocalObjectReference
+		want *corev1.LocalObjectReference
 	}{
 		"NewRef": {
 			u:    New(),
@@ -272,11 +277,11 @@ func TestCompositeDeletePolicy(t *testing.T) {
 }
 
 func TestResourceReference(t *testing.T) {
-	ref := &corev1.ObjectReference{Namespace: "ns", Name: "cool"}
+	ref := &reference.Composite{Name: "cool"}
 	cases := map[string]struct {
 		u    *Unstructured
-		set  *corev1.ObjectReference
-		want *corev1.ObjectReference
+		set  *reference.Composite
+		want *reference.Composite
 	}{
 		"NewRef": {
 			u:    New(),
@@ -297,7 +302,7 @@ func TestResourceReference(t *testing.T) {
 }
 
 func TestClaimReference(t *testing.T) {
-	ref := &Reference{Namespace: "ns", Name: "cool", APIVersion: "foo.com/v1", Kind: "Foo"}
+	ref := &reference.Claim{Namespace: "ns", Name: "cool", APIVersion: "foo.com/v1", Kind: "Foo"}
 	u := &Unstructured{}
 	u.SetName(ref.Name)
 	u.SetNamespace(ref.Namespace)
